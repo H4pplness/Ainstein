@@ -24,6 +24,8 @@ public class FunctionEntity extends BaseEntity{
     @Column(nullable = false)
     String resourceCode;
 
+    String type;
+
     @JdbcTypeCode(SqlTypes.JSON)
     Map<String,Object> metadata;
 }

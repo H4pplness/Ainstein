@@ -21,7 +21,6 @@ public class HttpTool implements Tool {
     public String getDescription() {
         return """
                 Tool: http
-                Description: Perform an HTTP request to any API endpoint. Supports GET, POST, PUT, DELETE. Always provide method, full URL, and optional headers, query parameters, or body. The response will return status code, headers, and body as a string.
                 
                 Request schema:
                 {
@@ -34,13 +33,12 @@ public class HttpTool implements Tool {
                           "body": "object or string (optional for POST/PUT)"
                     }
                 }
-               
                                
                 Response schema:
                 {
                   "statusCode": number,
                   "headers": { "string": "string" },
-                  "body": "string"
+                  "body": json object
                 }
                 
                 Example request:

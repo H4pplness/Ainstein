@@ -6,11 +6,16 @@ import dongpb.agenticai.orchestratorservice.application.exception.Errors;
 import dongpb.agenticai.orchestratorservice.domain.model.AIRequest;
 import dongpb.agenticai.orchestratorservice.domain.model.AIResponse;
 import dongpb.agenticai.orchestratorservice.domain.model.AIService;
+import dongpb.agenticai.orchestratorservice.domain.resource.Function;
+import dongpb.agenticai.orchestratorservice.domain.resource.Resource;
+import dongpb.agenticai.orchestratorservice.domain.resource.ResourceService;
 import dongpb.agenticai.orchestratorservice.domain.tool.Tool;
 import dongpb.agenticai.orchestratorservice.domain.tool.ToolRegistry;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -18,10 +23,14 @@ import java.util.Map;
 public class AgenticService {
     private final AIService aiService;
     private final ToolRegistry toolRegistry;
+    private final ResourceService resourceService;
 
-    public Object chat(String request) throws JsonProcessingException {
-        AIRequest aiRequest = AgenticPrompt.getSimpleInitPrompt();
-        aiRequest.addMessage("user",request);
+    public Object chat(AgenticRequest request) throws JsonProcessingException {
+        List<String> resources = request.getResources().stream().map(resourceService::getDescription).toList();
+        List<Tool> tools = request.getTools().stream().map(toolRegistry::get).toList();
+
+        AIRequest aiRequest = AgenticPrompt.getInitPrompt(tools,resources);
+        aiRequest.addMessage("user",Message.builder().role("user").message(request.getRequest()).build().toJson());
 
         while (true){
             AIResponse aiResponse = aiService.chat(aiRequest);
@@ -42,7 +51,7 @@ public class AgenticService {
         }
     }
 
-    Message<SystemResponseMethod> execute(String content) throws JsonProcessingException {
+    private Message<SystemResponseMethod> execute(String content) throws JsonProcessingException {
         Message<ExecuteMethod> executeMethodMessage = Message.fromJson(content, ExecuteMethod.class);
         String toolName = executeMethodMessage.getMessage().getTool();
         Tool tool = toolRegistry.get(toolName);

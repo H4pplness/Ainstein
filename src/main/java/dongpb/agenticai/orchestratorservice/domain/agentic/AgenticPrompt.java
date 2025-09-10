@@ -1,6 +1,9 @@
 package dongpb.agenticai.orchestratorservice.domain.agentic;
 
 import dongpb.agenticai.orchestratorservice.domain.model.AIRequest;
+import dongpb.agenticai.orchestratorservice.domain.resource.Function;
+import dongpb.agenticai.orchestratorservice.domain.resource.Resource;
+import dongpb.agenticai.orchestratorservice.domain.tool.Tool;
 
 import java.util.List;
 
@@ -74,13 +77,15 @@ public class AgenticPrompt {
             Khi đã đủ thông tin, AI sẽ dùng **method=return** để trả về kết quả cuối cùng cho người dùng.
             
             ---
+            - Các tool mà bạn có thể sử dụng:
+            %s
+            
+            - Danh sách tài nguyên mà bạn được phép truy cập:
+            %s
             
             ### LƯU Ý:
             - Bạn chỉ được phản hồi bằng JSON theo đúng cấu trúc trên, không được thêm text ngoài JSON.
             - Nếu không có tool phù hợp hoặc không tìm được câu trả lời, bạn phải trả về luôn với `method = "return"`.
-            - Các tool mà bạn có thể sử dụng: 
-            %s
-            
             """;
 
     private static final String HTTP_TOOL = """
@@ -131,6 +136,41 @@ public class AgenticPrompt {
                 .role("user")
                 .content(initPrompt)
                 .build();
+        AIRequest.Message exampleMessage = AIRequest.Message.builder()
+                .role("assistant")
+                .content("""
+                        {
+                            "role" : "assistant",
+                            "method" : "return",
+                            "message" : "Xin chào, tôi là AI hỗ trợ cho bạn !"
+                        }
+                        """)
+                .build();
+
+        AIRequest aiRequest = new AIRequest();
+        aiRequest.setModel("groq");
+        aiRequest.addMessages(List.of(initMessage,exampleMessage));
+        return aiRequest;
+    }
+
+    public static AIRequest getInitPrompt(List<Tool> tools, List<String> resourceDescriptions) {
+        StringBuilder toolSb = new StringBuilder();
+        for (Tool tool : tools) {
+            toolSb.append(tool.getDescription()).append("\n");
+        }
+
+        StringBuilder resourceSb = new StringBuilder();
+        for (String resourceDes : resourceDescriptions) {
+            resourceSb.append(resourceDes).append("\n");
+        }
+
+        String initPrompt = String.format(PROMPT, toolSb, resourceSb);
+
+        AIRequest.Message initMessage = AIRequest.Message.builder()
+                .role("user")
+                .content(initPrompt)
+                .build();
+
         AIRequest.Message exampleMessage = AIRequest.Message.builder()
                 .role("assistant")
                 .content("""

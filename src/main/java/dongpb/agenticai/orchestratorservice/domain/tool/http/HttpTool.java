@@ -20,49 +20,44 @@ public class HttpTool implements Tool {
     @Override
     public String getDescription() {
         return """
-                Tool: http
+                 Tool: http
                 
-                Request schema:
-                {
-                    "tool" : "http",
-                    "content" : {
-                          "method": "string (GET | POST | PUT | DELETE)",
-                          "url": "string (full URL, including scheme http/https)",
-                          "headers": { "string": "string" },
-                          "queryParams": { "string": "string | number | boolean" },
-                          "body": "object or string (optional for POST/PUT)"
-                    }
-                }
-                               
-                Response schema:
-                {
-                  "statusCode": number,
-                  "headers": { "string": "string" },
-                  "body": json object
-                }
+                 Input schema:
+                 {
+                      "method": "string (GET | POST | PUT | DELETE)",
+                      "url": "string (full URL, including scheme http/https)",
+                      "headers": { "string": "string" },
+                      "queryParams": { "string": "string | number | boolean" },
+                      "body": "object or string (optional for POST/PUT)"
+                 }
                 
-                Example request:
-                {
-                    "tool" : "http",
-                    "content" : {
-                          "method": "GET",
-                          "url": "https://api.openweathermap.org/data/2.5/weather",
-                          "queryParams": { "q": "Hanoi", "appid": "YOUR_API_KEY" },
-                          "headers": { "Accept": "application/json" }
-                    }
-                }
+                 Response schema:
+                 {
+                   "statusCode": number,
+                   "headers": { "string": "string" },
+                   "body": json object
+                 }
                 
-                Example response:
-                {
-                  "statusCode": 200,
-                  "body": "{ \\"temp\\": 30.5, \\"weather\\": \\"Sunny\\" }"
-                }
+                 Example request:
+                 {
+                    "method": "GET",
+                    "url": "https://api.openweathermap.org/data/2.5/weather",
+                    "queryParams": { "q": "Hanoi", "appid": "YOUR_API_KEY" },
+                    "headers": { "Accept": "application/json" }
+                 }
                 
-               """;
+                 Example response:
+                 {
+                   "statusCode": 200,
+                   "body": "{ \\"temp\\": 30.5, \\"weather\\": \\"Sunny\\" }"
+                 }
+                
+                """;
     }
 
     /**
      * input bao gồm method, url, headers, queryParams, body
+     *
      * @param input
      * @return
      */

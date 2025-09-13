@@ -35,6 +35,9 @@ public class AgenticService {
         while (true){
             AIResponse aiResponse = aiService.chat(aiRequest);
             String content = aiResponse.getContent();
+            if(content.isEmpty()) {
+                throw new BaseException(Errors.BAD_REQUEST,"The context is overwhelming!");
+            }
             Message message = Message.fromJson(content);
             aiRequest.addMessage("assistant",content);
             switch (message.getMethod()){

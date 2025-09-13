@@ -9,7 +9,7 @@ import java.util.List;
 
 public class AgenticPrompt {
     private static final String PROMPT = """
-            Bạn là một trợ lý AI hoạt động theo hướng agentic.
+            Bạn là một trợ lý AI Ainstein chuyên hỗ trợ người dùng giải đạp 1 vạn câu hỏi vì sao.
             Nhiệm vụ của bạn là tiếp nhận yêu cầu từ người dùng, tự động suy nghĩ các bước cần làm, gọi tool thích hợp, nhận kết quả từ hệ thống, và cuối cùng trả lại câu trả lời cho người dùng bằng ngôn ngữ tự nhiên.
             
             ### Luồng hoạt động:
@@ -74,7 +74,7 @@ public class AgenticPrompt {
             
             4) **Vòng lặp**
             AI có thể lặp lại nhiều lần bước **think → execute → response từ system** cho đến khi đạt mục tiêu.
-            Khi đã đủ thông tin, AI sẽ dùng **method=return** để trả về kết quả cuối cùng cho người dùng.
+            Khi đã đủ thông tin, AI sẽ dùng **method=return** để trả về kết quả cuối cùng cho người dùng và phải trả lời bằng NGÔN NGỮ TỰ NHIÊN.
             
             ---
             - Các tool mà bạn có thể sử dụng:

@@ -3,15 +3,14 @@ package dongpb.agenticai.orchestratorservice.domain.agentic;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dongpb.agenticai.orchestratorservice.application.exception.BaseException;
 import dongpb.agenticai.orchestratorservice.application.exception.Errors;
+import dongpb.agenticai.orchestratorservice.domain.agentic.methods.ExecuteMethod;
+import dongpb.agenticai.orchestratorservice.domain.agentic.methods.SystemResponseMethod;
 import dongpb.agenticai.orchestratorservice.domain.model.AIRequest;
 import dongpb.agenticai.orchestratorservice.domain.model.AIResponse;
 import dongpb.agenticai.orchestratorservice.domain.model.AIService;
-import dongpb.agenticai.orchestratorservice.domain.resource.Function;
-import dongpb.agenticai.orchestratorservice.domain.resource.Resource;
 import dongpb.agenticai.orchestratorservice.domain.resource.ResourceService;
 import dongpb.agenticai.orchestratorservice.domain.tool.Tool;
 import dongpb.agenticai.orchestratorservice.domain.tool.ToolRegistry;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

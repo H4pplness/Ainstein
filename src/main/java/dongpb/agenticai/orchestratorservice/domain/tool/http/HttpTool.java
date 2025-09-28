@@ -1,6 +1,7 @@
 package dongpb.agenticai.orchestratorservice.domain.tool.http;
 
 import dongpb.agenticai.orchestratorservice.domain.tool.Tool;
+import dongpb.agenticai.orchestratorservice.domain.tool.ToolType;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -14,7 +15,7 @@ public class HttpTool implements Tool {
 
     @Override
     public String getType() {
-        return "http";
+        return ToolType.HTTP.name();
     }
 
     @Override

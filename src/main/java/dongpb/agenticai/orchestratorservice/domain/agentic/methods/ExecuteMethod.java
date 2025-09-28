@@ -1,4 +1,4 @@
-package dongpb.agenticai.orchestratorservice.domain.agentic;
+package dongpb.agenticai.orchestratorservice.domain.agentic.methods;
 
 import lombok.Data;
 

@@ -7,6 +7,7 @@ public enum Errors {
     BAD_REQUEST(400,"Bad request"),
     UNAUTHORIZED(401,"Unauthorized"),
     FORBIDDEN(403,"Forbidden"),
+    NOT_FOUND(404,"Not found"),
     INTERNAL_SERVER_ERROR(500,"Internal server error"),
 
     NOT_FOUND_ENTITY(404,"Entity {} not found"),

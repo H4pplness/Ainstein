@@ -3,6 +3,8 @@ package dongpb.agenticai.orchestratorservice.domain.agentic;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dongpb.agenticai.orchestratorservice.common.JsonUtils;
+import dongpb.agenticai.orchestratorservice.domain.agentic.methods.ExecuteMethod;
+import dongpb.agenticai.orchestratorservice.domain.agentic.methods.ThinkMethod;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,6 +37,8 @@ public class Message<T> {
                 return fromJson(json, ThinkMethod.class);
             case "return" :
                 return fromJson(json, String.class);
+            case "execute" :
+                    return fromJson(json, ExecuteMethod.class);
             default:
                 return fromJson(json, Object.class);
         }

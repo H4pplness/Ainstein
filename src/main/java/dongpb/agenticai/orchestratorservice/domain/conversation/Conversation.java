@@ -16,7 +16,7 @@ public class Conversation {
     Map<String, Object> metadata;
     List<Message> messages;
 
-    public static Conversation of(ConversationEntity conversationEntity, List<MessageEntity> messageEntities) {
+    protected static Conversation of(ConversationEntity conversationEntity, List<MessageEntity> messageEntities) {
         Conversation conversation = new Conversation();
         conversation.setConversationId(conversationEntity.getConversationId());
         conversation.setTitle(conversationEntity.getTitle());
@@ -31,7 +31,7 @@ public class Conversation {
         return conversation;
     }
 
-    public ConversationEntity toEntity() {
+    protected ConversationEntity toEntity() {
         ConversationEntity conversationEntity = new ConversationEntity();
         conversationEntity.setConversationId(this.conversationId);
         conversationEntity.setTitle(this.title);
@@ -40,7 +40,7 @@ public class Conversation {
         return conversationEntity;
     }
 
-    public List<MessageEntity> toMessageEntities() {
+    protected List<MessageEntity> toMessageEntities() {
         List<MessageEntity> messageEntities = new ArrayList<>();
         for (Message message : this.messages) {
             MessageEntity messageEntity = message.toEntity();
@@ -65,7 +65,7 @@ public class Conversation {
         String role;
         String content;
 
-        public static Message of(MessageEntity messageEntity) {
+        protected static Message of(MessageEntity messageEntity) {
             Message message = new Message();
             message.setRole(messageEntity.getRole());
             message.setContent(messageEntity.getContent());
@@ -73,7 +73,7 @@ public class Conversation {
             return message;
         }
 
-        public MessageEntity toEntity() {
+        private MessageEntity toEntity() {
             MessageEntity messageEntity = new MessageEntity();
             messageEntity.setRole(this.role);
             messageEntity.setContent(this.content);

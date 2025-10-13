@@ -12,11 +12,13 @@ import dongpb.agenticai.orchestratorservice.domain.resource.ResourceService;
 import dongpb.agenticai.orchestratorservice.domain.tool.Tool;
 import dongpb.agenticai.orchestratorservice.domain.tool.ToolRegistry;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AgenticService {
@@ -47,6 +49,8 @@ public class AgenticService {
                 case "execute" :
                     aiRequest.addMessage("user",execute(content).toJson());
                     break;
+                case "plan" :
+                    break;
                 default:
                     throw new BaseException(Errors.BAD_REQUEST);
             }
@@ -57,8 +61,17 @@ public class AgenticService {
         Message<ExecuteMethod> executeMethodMessage = Message.fromJson(content, ExecuteMethod.class);
         String toolName = executeMethodMessage.getMessage().getTool();
         Tool tool = toolRegistry.get(toolName);
+        Message<SystemResponseMethod> systemResponseMethodMessage = new Message<>();
         if (tool == null) {
-            throw new BaseException(Errors.BAD_REQUEST,"Unknown tool: " + toolName);
+            log.error("Unknown tool {}",toolName);
+            systemResponseMethodMessage = new Message<>();
+            systemResponseMethodMessage.setMethod("response");
+
+            SystemResponseMethod systemResponseMethod = new SystemResponseMethod();
+            systemResponseMethod.setTool(toolName);
+            systemResponseMethod.setOutput(Map.of("error","Unknown tool "+toolName));
+            systemResponseMethodMessage.setMessage(systemResponseMethod);
+            return systemResponseMethodMessage;
         }
 
         Map<String,Object> output = tool.execute(executeMethodMessage.getMessage().getInput());
@@ -67,7 +80,6 @@ public class AgenticService {
         systemResponseMethod.setTool(toolName);
         systemResponseMethod.setOutput(output);
 
-        Message<SystemResponseMethod> systemResponseMethodMessage = new Message<>();
         systemResponseMethodMessage.setMethod("response");
         systemResponseMethodMessage.setMessage(systemResponseMethod);
 

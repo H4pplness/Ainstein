@@ -8,7 +8,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @EqualsAndHashCode(callSuper = true)
-@Entity(name = "functions")
+@Entity(name = "messages")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @NoArgsConstructor

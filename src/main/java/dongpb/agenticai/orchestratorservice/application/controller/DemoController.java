@@ -2,11 +2,13 @@ package dongpb.agenticai.orchestratorservice.application.controller;
 
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.io.IOException;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
 @RequestMapping("/api/v1/")
@@ -52,5 +54,36 @@ public class DemoController {
                         .currency("USD")
                         .createdAt("2019-01-01T00:00:00Z")
                 .build());
+    }
+
+    private final CopyOnWriteArrayList<SseEmitter> emitters = new CopyOnWriteArrayList<>();
+
+    @GetMapping(path = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter connect() {
+        SseEmitter emitter = new SseEmitter(0L); // No timeout
+        emitters.add(emitter);
+
+        emitter.onCompletion(() -> {
+            emitters.remove(emitter);
+            System.out.println("Client disconnected. Active: " + emitters.size());
+        });
+
+        emitter.onTimeout(() -> emitters.remove(emitter));
+        emitter.onError(e -> emitters.remove(emitter));
+
+        // Gửi welcome message
+        try {
+            emitter.send(SseEmitter.event()
+                    .name("connected")
+                    .data("Welcome to chat!"));
+
+            emitter.send(SseEmitter.event()
+                    .name("hello")
+                    .data("Hello, world!"));
+        } catch (IOException e) {
+            emitters.remove(emitter);
+        }
+
+        return emitter;
     }
 }

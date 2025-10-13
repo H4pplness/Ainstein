@@ -9,7 +9,7 @@ import org.hibernate.type.SqlTypes;
 import java.util.Map;
 
 @EqualsAndHashCode(callSuper = true)
-@Entity(name = "functions")
+@Entity(name = "conversations")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @NoArgsConstructor

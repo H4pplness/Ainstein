@@ -15,6 +15,7 @@ public enum Errors {
     PAYLOAD_TOO_LARGE(413,"Payload too large"),
 
     MODEL_NOT_FOUND(404,"Model {} not found"),
+    CUSTOM_BAD_REQUEST(400,"%s")
     ;
 
     Errors(int statusCode, String message) {

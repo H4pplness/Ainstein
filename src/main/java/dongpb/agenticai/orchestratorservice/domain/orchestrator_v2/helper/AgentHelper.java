@@ -4,6 +4,7 @@ import dongpb.agenticai.orchestratorservice.application.exception.BaseException;
 import dongpb.agenticai.orchestratorservice.application.exception.Errors;
 import dongpb.agenticai.orchestratorservice.database.entities.agent.AgentEntity;
 import dongpb.agenticai.orchestratorservice.database.repositories.AgentRepository;
+import dongpb.agenticai.orchestratorservice.domain.model.AIRequest;
 import dongpb.agenticai.orchestratorservice.domain.orchestrator_v2.Agent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -88,11 +89,11 @@ public class AgentHelper {
             rootAgentEntity = agentRepository.findById(agent.getAgentId())
                     .orElseThrow(()->new BaseException(Errors.NOT_FOUND));
         }
-        getFlattenAgents(agent,flattenAgents,idSet, rootAgentEntity == null ? null : rootAgentEntity.getParentAgentId());
+        flattenAgent(agent,flattenAgents,idSet, rootAgentEntity == null ? null : rootAgentEntity.getParentAgentId());
         return flattenAgents;
     }
 
-    private void getFlattenAgents(Agent agent, List<AgentEntity> agents, Set<Integer> idSet, Integer parentId) {
+    private void flattenAgent(Agent agent, List<AgentEntity> agents, Set<Integer> idSet, Integer parentId) {
         if (idSet.contains(agent.getAgentId())) {
             log.error("getFlattenAgents : agent {} was created",agent.getAgentId());
             throw new BaseException(Errors.BAD_REQUEST);
@@ -110,7 +111,7 @@ public class AgentHelper {
             return;
         }
         for (Agent child : agent.getChildren()) {
-            getFlattenAgents(child,agents,idSet, agentEntity.getAgentId());
+            flattenAgent(child,agents,idSet, agentEntity.getAgentId());
         }
     }
 
@@ -128,6 +129,22 @@ public class AgentHelper {
             agentEntity.setParentAgentId(parentId);
         }
         return agentEntity;
+    }
+
+    public AIRequest.Message getUserMessage(String content) {
+        return AIRequest.Message
+                .builder()
+                .role("user")
+                .content(content)
+                .build();
+    }
+
+    public AIRequest.Message getAIMessage(String content) {
+        return AIRequest.Message
+                .builder()
+                .role("assistant")
+                .content(content)
+                .build();
     }
 
 }

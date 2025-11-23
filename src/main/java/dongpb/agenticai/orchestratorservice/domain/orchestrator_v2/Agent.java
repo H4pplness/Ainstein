@@ -1,6 +1,8 @@
 package dongpb.agenticai.orchestratorservice.domain.orchestrator_v2;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import dongpb.agenticai.orchestratorservice.domain.model.AIModel;
+import dongpb.agenticai.orchestratorservice.domain.orchestrator_v2.helper.PromptHelper;
 import dongpb.agenticai.orchestratorservice.domain.tool.Tool;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +31,10 @@ public class Agent {
         children.add(agent);
     }
 
+    @JsonIgnore
+    public String getInitPrompt() {
+        return PromptHelper.buildInitPrompt(this);
+    }
 
     @Data
     @NoArgsConstructor

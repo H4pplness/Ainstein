@@ -8,5 +8,4 @@ import java.util.List;
 
 @Repository
 public interface ConversationRepository extends JpaRepository<ConversationEntity, String> {
-    List<ConversationEntity> findByUserId(String userId);
 }

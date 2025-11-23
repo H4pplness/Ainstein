@@ -3,53 +3,56 @@ package dongpb.agenticai.orchestratorservice.domain.conversation;
 import dongpb.agenticai.orchestratorservice.application.exception.BaseException;
 import dongpb.agenticai.orchestratorservice.application.exception.Errors;
 import dongpb.agenticai.orchestratorservice.database.entities.ConversationEntity;
-import dongpb.agenticai.orchestratorservice.database.entities.MessageEntity;
+import dongpb.agenticai.orchestratorservice.database.entities.ConversationMessageEntity;
+import dongpb.agenticai.orchestratorservice.database.repositories.ConversationMessageRepository;
 import dongpb.agenticai.orchestratorservice.database.repositories.ConversationRepository;
-import dongpb.agenticai.orchestratorservice.database.repositories.MessageRepository;
+import jdk.dynalink.linker.LinkerServices;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class ConversationService {
     private final ConversationRepository conversationRepository;
-    private final MessageRepository messageRepository;
+    private final ConversationMessageRepository conversationMessageEntity;
+    private final ConversationMessageRepository conversationMessageRepository;
 
-    public Conversation getById(String conversationId){
+    public Conversation getConversation(String conversationId){
+        Conversation conversation = new Conversation();
+        conversation.setConversationId(conversationId);
         ConversationEntity conversationEntity = conversationRepository.findById(conversationId)
-                .orElseThrow(() -> new BaseException(Errors.NOT_FOUND));
-        List<MessageEntity> messageEntities = messageRepository.findByConversationId(conversationId);
-        return Conversation.of(conversationEntity,messageEntities);
+                .orElseThrow(() -> new BaseException(Errors.BAD_REQUEST));
+
+        List<ConversationMessageEntity> messages = conversationMessageRepository.findAllByConversationId(conversationId);
+        conversation.setMessages(messages);
+
+        return conversation;
     }
 
-    public void save(Conversation conversation){
-        ConversationEntity conversationEntity = conversation.toEntity();
-        if (conversationEntity.getConversationId() == null) {
-            conversationEntity.setConversationId(UUID.randomUUID().toString());
+    public Object sendMessage(String conversationId, Conversation.Message message) {
+        if (conversationId == null) {
+            ConversationEntity conversationEntity = new ConversationEntity();
+            conversationRepository.save(conversationEntity);
+            conversationId = conversationEntity.getConversationId();
         }
-        List<MessageEntity> messageEntities = conversation.toMessageEntities();
 
-        conversationRepository.save(conversationEntity);
-        messageRepository.saveAll(messageEntities);
+        ConversationMessageEntity conversationMessageEntity = createConversationMessage(conversationId,message);
+        /**
+         * Send a message to the agent
+         */
+
+        conversationMessageRepository.save(conversationMessageEntity);
+        return conversationMessageEntity;
     }
 
-    public void delete(Conversation conversation){
-        ConversationEntity conversationEntity = conversation.toEntity();
-        List<MessageEntity> messageEntities = conversation.toMessageEntities();
-
-        conversationRepository.delete(conversationEntity);
-        messageRepository.deleteAll(messageEntities);
-    }
-
-    public void delete(String conversationId){
-        ConversationEntity conversationEntity = conversationRepository.findById(conversationId)
-                .orElseThrow(() -> new BaseException(Errors.NOT_FOUND));
-        List<MessageEntity> messageEntities = messageRepository.findByConversationId(conversationId);
-
-        conversationRepository.delete(conversationEntity);
-        messageRepository.deleteAll(messageEntities);
+    private ConversationMessageEntity createConversationMessage(String conversationId, Conversation.Message message) {
+        ConversationMessageEntity conversationMessageEntity = new ConversationMessageEntity();
+        conversationMessageEntity.setConversationId(conversationId);
+        conversationMessageEntity.setContent(message.getContent());
+        conversationMessageEntity.setSenderCode(message.getSenderCode());
+        conversationMessageEntity.setReceiverCode(message.getReceiverCode());
+        return conversationMessageEntity;
     }
 }

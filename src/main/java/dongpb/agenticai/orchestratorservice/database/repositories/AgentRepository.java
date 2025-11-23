@@ -24,5 +24,7 @@ public interface AgentRepository extends JpaRepository<AgentEntity, Integer> {
             SELECT *\s
             FROM descendants;
     """,nativeQuery = true)
-    List<AgentEntity> findAllByBusinessId(@Param("rootId") Integer rootId);
+    List<AgentEntity> findAllAgentAndChildren(@Param("rootId") Integer rootId);
+
+    List<AgentEntity> findAllByParentAgentId(Integer parentAgentId);
 }

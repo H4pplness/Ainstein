@@ -7,6 +7,8 @@ import java.util.Map;
 
 @Slf4j
 public class JsonUtils {
+    public static ObjectMapper mapper = new ObjectMapper();
+
     public static String extractJson(String text) {
         int first = text.indexOf('{');
         int last = text.lastIndexOf('}');
@@ -17,7 +19,6 @@ public class JsonUtils {
     public static Map<String,Object> toMap(String text) {
         text = extractJson(text);
         log.info("Json : {}", text);
-        ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.readValue(text, Map.class);
         }catch (Exception e){
@@ -26,7 +27,6 @@ public class JsonUtils {
     }
 
     public static String toJson(Object object){
-        ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.writeValueAsString(object);
         }catch (Exception e){

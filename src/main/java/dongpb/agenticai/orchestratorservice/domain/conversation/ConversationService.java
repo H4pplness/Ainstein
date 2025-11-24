@@ -18,6 +18,7 @@ public class ConversationService {
     private final ConversationRepository conversationRepository;
     private final ConversationMessageRepository conversationMessageEntity;
     private final ConversationMessageRepository conversationMessageRepository;
+    private final KafkaParticipantManager kafkaParticipantManager;
 
     public Conversation getConversation(String conversationId){
         Conversation conversation = new Conversation();
@@ -39,8 +40,12 @@ public class ConversationService {
         }
 
         ConversationMessageEntity conversationMessageEntity = createConversationMessage(conversationId,message);
+
+        // send a message to kafka
+        kafkaParticipantManager.sendMessage(message.getSenderCode(),message);
         /**
          * Send a message to the agent
+         * Push messages to queue -> Agent get from queue and handle it -> Return response to
          */
 
         conversationMessageRepository.save(conversationMessageEntity);

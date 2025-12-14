@@ -41,8 +41,9 @@ public class ConversationService {
 
         ConversationMessageEntity conversationMessageEntity = createConversationMessage(conversationId,message);
 
-        // send a message to kafka
-        kafkaParticipantManager.sendMessage(message.getSenderCode(),message);
+        message.setConversationId(conversationId);
+        // send a message to receiver queue
+        kafkaParticipantManager.sendMessage(message.getReceiverCode(),message);
         /**
          * Send a message to the agent
          * Push messages to queue -> Agent get from queue and handle it -> Return response to

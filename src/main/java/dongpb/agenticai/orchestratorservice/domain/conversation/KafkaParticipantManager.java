@@ -1,5 +1,7 @@
 package dongpb.agenticai.orchestratorservice.domain.conversation;
 
+import dongpb.agenticai.orchestratorservice.application.exception.BaseException;
+import dongpb.agenticai.orchestratorservice.application.exception.Errors;
 import dongpb.agenticai.orchestratorservice.common.JsonUtils;
 import dongpb.agenticai.orchestratorservice.database.entities.ParticipantCodeEntity;
 import dongpb.agenticai.orchestratorservice.database.repositories.ParticipantCodeRepository;
@@ -37,6 +39,8 @@ public class KafkaParticipantManager {
 
     private final AdminClient adminClient;
 
+    private final EventHandlerRegistry eventHandlerRegistry;
+
     private static final String TOPIC_PREFIX = "participant";
     private final Map<String, Participant> participants = new ConcurrentHashMap<>(); //
 
@@ -68,7 +72,7 @@ public class KafkaParticipantManager {
     public void createParticipant(String code, Map<String, Object> metadata , EventHandler handler,
                                   int numPartitions, short replicationFactor) {
         if (handler == null) {
-            handler = new AgentHandler();
+            handler = eventHandlerRegistry.getHandler(AgentHandler.class);
         }
 
         if (participants.containsKey(code)) {
@@ -138,9 +142,14 @@ public class KafkaParticipantManager {
     /**
      * Gửi message đến participant
      */
-    public void sendMessage(String participantCode, Object message) {
+    public void sendMessage(String participantCode, Conversation.Message message) {
         if (!participants.containsKey(participantCode)) {
             throw new IllegalArgumentException("Participant không tồn tại: " + participantCode);
+        }
+
+        if (!message.getReceiverCode().equals(participantCode)) {
+            log.error("Người nhận phải trùng với participantCode !");
+            throw new BaseException(Errors.BAD_REQUEST);
         }
 
         String topicName = getTopicName(participantCode);

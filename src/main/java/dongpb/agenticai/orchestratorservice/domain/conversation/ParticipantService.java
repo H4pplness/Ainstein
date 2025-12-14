@@ -15,18 +15,20 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class ParticipantService {
     private final ParticipantCodeRepository participantCodeRepository;
     private final KafkaParticipantManager kafkaParticipantManager;
+    private final EventHandlerRegistry eventHandlerRegistry;
 
     @PostConstruct
     public void init() {
         List<ParticipantCodeEntity> participantCodeEntities = participantCodeRepository.findAll();
         for (ParticipantCodeEntity p : participantCodeEntities) {
-            kafkaParticipantManager.createParticipant(p.getParticipantCode(),new AgentHandler());
+            kafkaParticipantManager.createParticipant(p.getParticipantCode(),eventHandlerRegistry.getHandler(AgentHandler.class));
         }
     }
     /**
@@ -38,15 +40,17 @@ public class ParticipantService {
     public Object createParticipant(String id,ParticipantType participantType) {
         String code = participantType.getType() + "-" + id;
 
-        participantCodeRepository.findById(code)
-                .orElseThrow(()->new BaseException(Errors.BAD_REQUEST));
+        Optional<ParticipantCodeEntity> participantCodeEntity = participantCodeRepository.findById(code);
+        if (participantCodeEntity.isPresent()) {
+            throw new BaseException(Errors.BAD_REQUEST);
+        }
 
         ParticipantCodeEntity participantCode = new ParticipantCodeEntity();
         participantCode.setReferenceId(id);
         participantCode.setType(participantType.getType());
         participantCode.setParticipantCode(code);
 
-        kafkaParticipantManager.createParticipant(code,new AgentHandler());
+        kafkaParticipantManager.createParticipant(code,eventHandlerRegistry.getHandler(AgentHandler.class));
         return participantCodeRepository.save(participantCode);
     }
 

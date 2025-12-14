@@ -16,6 +16,7 @@ public class Conversation {
 
     @Data
     public static class Message {
+        private String conversationId;
         private String senderCode;
         private String receiverCode;
         private Map<String,Object> content;
@@ -24,8 +25,10 @@ public class Conversation {
 
 
     public void setMessages(List<ConversationMessageEntity> messageEntities) {
+        String id = conversationId;
         messages = messageEntities.stream().map(e->{
             Message message = new Message();
+            message.setConversationId(message.getConversationId()!=null ? message.getConversationId() : id);
             message.setSenderCode(e.getSenderCode());
             message.setReceiverCode(e.getReceiverCode());
             message.setContent(e.getContent());
